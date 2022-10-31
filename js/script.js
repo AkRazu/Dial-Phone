@@ -4,7 +4,6 @@ const search = (search, dataLimit) => {
     .then((response) => response.json())
     .then((data) => searchResult(data.data, dataLimit));
 };
-
 const searchResult = (allPhone, dataLimit) => {
   // allPhone
   const phoneDiv = document.getElementById("PhoneSection");
@@ -36,7 +35,7 @@ const searchResult = (allPhone, dataLimit) => {
               <p class="card-text">
                 ${element.phone_name}
               </p>
-              <button onClick="detailsDataPhon('${element.slug}')" type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Details</button>
+              <button onClick="detailsDataPhone('${element.slug}')" type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Details</button>
             </div>
           </div>
           `;
@@ -48,37 +47,44 @@ const searchProcess = (dataLimit) => {
   const textField = document.getElementById("searchInput");
   const searchText = textField.value;
   search(searchText, dataLimit);
-  textField.value = "";
 };
-document.getElementById("searchInput").addEventListener("keypress", (e) => {
-  if (e.key === "enter") {
-    e.searchResult();
+document.getElementById("searchInput").addEventListener("keypress",function (e) {
+  if (e.key === "Enter") {
+    searchProcess(10);
   }
 });
-
 document.getElementById("searchBtn").addEventListener("click", function () {
   searchProcess(10);
 });
-
-document.getElementById("showAll").addEventListener("enter", () => {
-  searchResult();
+document.getElementById("showAll").addEventListener("click", function () {
+    searchProcess();
 });
 
-const detailsDataPhone = (details) => {
-  const url = `https://openapi.programming-hero.com/api/phone/${details}`;
+const detailsDataPhone = (detailsInput) => {
+  const url = `https://openapi.programming-hero.com/api/phone/${detailsInput}`;
   fetch(url)
     .then((response) => response.json())
     .then((data) => phoneDetails(data.data));
 };
 const phoneDetails = (details) => {
-  const displayDetails = document.getElementById("detailsPhone");
-  displayDetails.innerHTML = "";
-  const div = document.createElement("div");
-  div.classList.add('modal-dialog');
-  div.innerHTML = `
+  console.log(details);
+  const title = document.getElementById("modelTitle");
+  title.innerText = `${details.name}`;
+  const detailsModels = document.getElementById("detailModel");
+  const sensor = [];
+  details.mainFeatures.sensors.forEach( e=>{
+    sensor.push(e)
+  }
+  )
+  detailsModels.innerHTML = `
+    <p>Release Date : ${details.releaseDate}</p>
+    <p>Storage : ${details.mainFeatures.storage}</p>
+    <p>DisplaySize${details.mainFeatures.displaySize}</p>
+    <p>ChipSet : ${details.mainFeatures.chipSet}</p>
+    <p>Memory : ${details.mainFeatures.memory}</p>
+    <p>Sensors : ${sensor}</p>
 
     `;
-  displayDetails.appendChild(div);
 };
 
 const showAllBtn = (commend) => {

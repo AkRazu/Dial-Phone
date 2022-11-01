@@ -1,4 +1,4 @@
-const search = (search, dataLimit) => {
+/* const search = (search, dataLimit) => {
   const url = `https://openapi.programming-hero.com/api/phones?search=${search}`;
   fetch(url)
     .then((response) => response.json())
@@ -95,3 +95,4 @@ const showAllBtn = (commend) => {
     btnShow.classList.add("d-none");
   }
 };
+ */

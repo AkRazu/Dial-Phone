@@ -1,98 +1,124 @@
-/* const search = (search, dataLimit) => {
-  const url = `https://openapi.programming-hero.com/api/phones?search=${search}`;
+// JSON data section
+const PhoneSearch = (phoneText, dataLimit) => {
+  const url = `https://openapi.programming-hero.com/api/phones?search=${phoneText}`;
   fetch(url)
     .then((response) => response.json())
-    .then((data) => searchResult(data.data, dataLimit));
+    .then((data) => displayData(data.data, dataLimit));
 };
-const searchResult = (allPhone, dataLimit) => {
-  // allPhone
+PhoneSearch('huawei');
+
+// Main data section
+const displayData = (data, dataLimit) => {
   const phoneDiv = document.getElementById("PhoneSection");
   phoneDiv.textContent = "";
-  if (dataLimit && allPhone.length > 10) {
-    allPhone = allPhone.slice(0, 10);
-    showAllBtn(true);
+  //   data slice
+  spinnerAdd();
+  if (dataLimit && data.length > 10) {
+    data = data.slice(0, 10);
+    showData(true);
+    spinnerAdd();
   } else {
-    showAllBtn();
+    showData();
   }
 
-  //   phone not found
-  const phoneNotFount = document.getElementById("notFound");
-  if (allPhone.length === 0) {
-    phoneNotFount.classList.remove("d-none");
+  // invalid data input
+  const warning = document.getElementById("notFound");
+  if (data.length === 0) {
+    warning.classList.remove("d-none");
+  } else if (data === "") {
+    warning.classList.remove("d-none");
   } else {
-    phoneNotFount.classList.add("d-none");
+    warning.classList.add("d-none");
   }
 
-  allPhone.map((element) => {
+  data.forEach((element) => {
     const div = document.createElement("div");
-    div.classList.add("col-md-3");
+    div.classList.add("col-md-4");
     div.classList.add("col-sm-12");
     div.innerHTML = `
-          <div class="card" >
-            <img src="${element.image}" class="w-50 m-auto mt-2" alt="..." />
-            <div class="card-body">
-              <h5 class="card-title">${element.brand}</h5>
-              <p class="card-text">
-                ${element.phone_name}
-              </p>
-              <button onClick="detailsDataPhone('${element.slug}')" type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Details</button>
-            </div>
-          </div>
-          `;
+    <div class="card">
+    <img src="${element.image}" class="w-50 m-auto mt-4" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">Brand : ${element.brand}</h5>
+      <p>Model : ${element.phone_name}</p>
+      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+      <button onClick="moreDetails('${element.slug}')" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Details</button>
+    </div>
+    </div>
+    `;
     phoneDiv.appendChild(div);
   });
 };
 
-const searchProcess = (dataLimit) => {
-  const textField = document.getElementById("searchInput");
-  const searchText = textField.value;
-  search(searchText, dataLimit);
-};
-document.getElementById("searchInput").addEventListener("keypress",function (e) {
-  if (e.key === "Enter") {
-    searchProcess(10);
-  }
-});
-document.getElementById("searchBtn").addEventListener("click", function () {
-  searchProcess(10);
-});
-document.getElementById("showAll").addEventListener("click", function () {
-    searchProcess();
-});
-
-const detailsDataPhone = (detailsInput) => {
-  const url = `https://openapi.programming-hero.com/api/phone/${detailsInput}`;
+// More Details
+const moreDetails = (value) => {
+  const url = `https://openapi.programming-hero.com/api/phone/${value}`;
   fetch(url)
     .then((response) => response.json())
-    .then((data) => phoneDetails(data.data));
+    .then((data) => detailsDisplay(data.data));
 };
-const phoneDetails = (details) => {
+
+const detailsDisplay = (details) => {
   console.log(details);
-  const title = document.getElementById("modelTitle");
-  title.innerText = `${details.name}`;
-  const detailsModels = document.getElementById("detailModel");
+  const modelHeader = document.getElementById("modelTitle");
+  modelHeader.innerText = `${details.name}`;
   const sensor = [];
-  details.mainFeatures.sensors.forEach( e=>{
-    sensor.push(e)
-  }
-  )
-  detailsModels.innerHTML = `
-    <p>Release Date : ${details.releaseDate}</p>
-    <p>Storage : ${details.mainFeatures.storage}</p>
-    <p>DisplaySize${details.mainFeatures.displaySize}</p>
-    <p>ChipSet : ${details.mainFeatures.chipSet}</p>
-    <p>Memory : ${details.mainFeatures.memory}</p>
-    <p>Sensors : ${sensor}</p>
-
-    `;
+  details.mainFeatures.sensors.forEach(e=>{
+    sensor.push(e);
+  })
+  const detailsPhone = document.getElementById("detailModel");
+  detailsPhone.innerHTML = `
+  <p>Storage : ${details.mainFeatures.storage}</p>
+  <p>Display : ${details.mainFeatures.displaySize}</p>
+  <p>ChipSet : ${details.mainFeatures.chipSet}</p>
+  <p>Memory : ${details.mainFeatures.memory}</p>
+  <p>Sensor : ${sensor}</p>
+  <h5>More Details</h5>
+  <p>WLAN: ${details.others.WLAN}</p>
+  <p>Bluetooth : ${details.others.Bluetooth}</p>
+  <p>GPS : ${details.others.GPS}</p>
+  <p>NFC : ${details.others.NFC}</p>
+  <p>Radio : ${details.others.Radio}</p>
+  <p>USB : ${details.others.USB}</p>
+  `;
+};
+// Input value
+const searchValue = (dataLimit) => {
+  const searchText = document.getElementById("searchInput").value;
+  PhoneSearch(searchText, dataLimit);
+  spinnerAdd(true);
 };
 
-const showAllBtn = (commend) => {
-  const btnShow = document.getElementById("showAll");
-  if (commend == true) {
-    btnShow.classList.remove("d-none");
+// input data search
+document
+  .getElementById("searchInput")
+  .addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      searchValue(10);
+    }
+  });
+
+document.getElementById("searchBtn").addEventListener("click", function () {
+  searchValue(10);
+});
+document.getElementById("showAll").addEventListener("click", function () {
+  searchValue();
+});
+//
+const showData = (value) => {
+  const showAllBtn = document.getElementById("showAll");
+  if (value === true) {
+    showAllBtn.classList.remove("d-none");
   } else {
-    btnShow.classList.add("d-none");
+    showAllBtn.classList.add("d-none");
   }
 };
- */
+// spinner
+const spinnerAdd = (value) => {
+  const spinnerId = document.getElementById("spinner");
+  if (value === true) {
+    spinnerId.classList.remove("d-none");
+  } else {
+    spinnerId.classList.add("d-none");
+  }
+};

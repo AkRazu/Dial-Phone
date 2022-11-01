@@ -8,7 +8,6 @@ const PhoneSearch = (phoneText, dataLimit) => {
 
 // Main data section
 const displayData = (data, dataLimit) => {
-  console.log(data, dataLimit);
   const phoneDiv = document.getElementById("PhoneSection");
   phoneDiv.textContent = "";
   //   data slice
@@ -41,12 +40,41 @@ const displayData = (data, dataLimit) => {
       <h5 class="card-title">Brand : ${element.brand}</h5>
       <p>Model : ${element.phone_name}</p>
       <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-      <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Details</button>
+      <button onClick="moreDetails('${element.slug}')" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Details</button>
     </div>
     </div>
     `;
     phoneDiv.appendChild(div);
   });
+};
+
+// More Details
+const moreDetails = (value) => {
+  spinnerAdd(true);
+  const url = `https://openapi.programming-hero.com/api/phone/${value}`;
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => detailsDisplay(data.data));
+};
+
+const detailsDisplay = (details) => {
+  console.log(details);
+  const modelHeader = document.getElementById("modelTitle");
+  modelHeader.innerText = `${details.name}`;
+  const detailsPhone = document.getElementById("detailModel");
+  detailsPhone.innerHTML = `
+  <p>Storage : ${details.mainFeatures.storage}</p>
+  <p>Display : ${details.mainFeatures.displaySize}</p>
+  <p>ChipSet : ${details.mainFeatures.chipSet}</p>
+  <p>Memory : ${details.mainFeatures.memory}</p>
+  <h5>More Details</h5>
+  <p>WLAN: ${details.others.WLAN}</p>
+  <p>Bluetooth : ${details.others.Bluetooth}</p>
+  <p>GPS : ${details.others.GPS}</p>
+  <p>NFC : ${details.others.NFC}</p>
+  <p>Radio : ${details.others.Radio}</p>
+  <p>USB : ${details.others.USB}</p>
+  `;
 };
 // Input value
 const searchValue = (dataLimit) => {
@@ -66,6 +94,9 @@ document
 
 document.getElementById("searchBtn").addEventListener("click", function () {
   searchValue(10);
+});
+document.getElementById("showAll").addEventListener("click", function () {
+  searchValue();
 });
 //
 const showData = (value) => {

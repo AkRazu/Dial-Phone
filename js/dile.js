@@ -5,6 +5,7 @@ const PhoneSearch = (phoneText, dataLimit) => {
     .then((response) => response.json())
     .then((data) => displayData(data.data, dataLimit));
 };
+PhoneSearch('huawei');
 
 // Main data section
 const displayData = (data, dataLimit) => {
@@ -15,6 +16,7 @@ const displayData = (data, dataLimit) => {
   if (dataLimit && data.length > 10) {
     data = data.slice(0, 10);
     showData(true);
+    spinnerAdd();
   } else {
     showData();
   }
@@ -50,7 +52,6 @@ const displayData = (data, dataLimit) => {
 
 // More Details
 const moreDetails = (value) => {
-  spinnerAdd(true);
   const url = `https://openapi.programming-hero.com/api/phone/${value}`;
   fetch(url)
     .then((response) => response.json())
@@ -61,12 +62,17 @@ const detailsDisplay = (details) => {
   console.log(details);
   const modelHeader = document.getElementById("modelTitle");
   modelHeader.innerText = `${details.name}`;
+  const sensor = [];
+  details.mainFeatures.sensors.forEach(e=>{
+    sensor.push(e);
+  })
   const detailsPhone = document.getElementById("detailModel");
   detailsPhone.innerHTML = `
   <p>Storage : ${details.mainFeatures.storage}</p>
   <p>Display : ${details.mainFeatures.displaySize}</p>
   <p>ChipSet : ${details.mainFeatures.chipSet}</p>
   <p>Memory : ${details.mainFeatures.memory}</p>
+  <p>Sensor : ${sensor}</p>
   <h5>More Details</h5>
   <p>WLAN: ${details.others.WLAN}</p>
   <p>Bluetooth : ${details.others.Bluetooth}</p>
